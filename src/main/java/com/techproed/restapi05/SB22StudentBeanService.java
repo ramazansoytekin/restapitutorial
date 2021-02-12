@@ -19,10 +19,6 @@ public class SB22StudentBeanService {
 		this.studentRepository = studentRepository;
 	}
 	
-//	public List<SB20StudentBean> getStudents(){
-//		return studentRepository.findAll();
-//	}
-	
 	//For GET Requests for all data
 	public static List<SB20StudentBean> getStudents(){
 		return studentRepository.findAll();
@@ -37,11 +33,11 @@ public class SB22StudentBeanService {
 	public static void addNewStudent(SB20StudentBean studentBean) {
 		
 		Optional<SB20StudentBean> studentEmailOptional =  studentRepository.findSB20StudentBeanByEmail(studentBean.getEmail());
-		Optional<SB20StudentBean> studentIdOptional =  studentRepository.findSB20StudentBeanById(studentBean.getId());
-		
 		if(studentEmailOptional.isPresent()) {
 			throw new IllegalStateException("Email is taken");
 		}
+		
+		Optional<SB20StudentBean> studentIdOptional =  studentRepository.findSB20StudentBeanById(studentBean.getId());
 		if(studentIdOptional.isPresent()) {
 			throw new IllegalStateException("Id exists, id should be unique");
 		}
@@ -70,8 +66,10 @@ public class SB22StudentBeanService {
 		
 		//2.Way to check if the record exist by using id
 		SB20StudentBean existingStudent = studentRepository.findById(studentId).orElseThrow(()->new IllegalStateException(studentId + " does not exist..."));
+
+		//with night time  =====================
 		
-		//Update "name"
+		//To update name
 		String existingName = existingStudent.getName();
 		if(newStudent.getName()==null) {
 			existingStudent.setName(null);
@@ -81,8 +79,9 @@ public class SB22StudentBeanService {
 			existingStudent.setName(newStudent.getName());
 		}
 		
-		//Update "email"
+		//To update email
 		String existingEmail = existingStudent.getEmail();
+
 		if(newStudent.getEmail()==null) {
 			existingStudent.setEmail(null);
 		}else if(existingStudent.getEmail()==null) {
@@ -90,21 +89,86 @@ public class SB22StudentBeanService {
 		}else if(!existingEmail.equals(newStudent.getEmail())) {
 			existingStudent.setEmail(newStudent.getEmail());
 		}else {
-			throw new IllegalStateException("Email exists, use another email");
+			throw new IllegalStateException("Email must be unique...");
 		}
 		
-		//Update date of birth
+		//To update Dob
 		LocalDate existingDob = existingStudent.getDob();
 		if(newStudent.getDob()==null) {
 			existingStudent.setDob(null);
-		}else if(existingStudent.getDob()==null) {
+		}else if(existingStudent.getName()==null) {
 			existingStudent.setDob(newStudent.getDob());
-		}else if(!existingDob.equals(newStudent.getDob())) {
+		}else if(!existingName.equals(newStudent.getDob())) {
 			existingStudent.setDob(newStudent.getDob());
 		}
 		
-		
 		return studentRepository.save(existingStudent);
+	}
+		//For PATCH Request
+		@Transactional
+		public static SB20StudentBean updateStudentPartially2(Long studentId, @RequestBody SB20StudentBean newStudent) {
+			
+			//2.Way to check if the record exist by using id
+			SB20StudentBean existingStudent = studentRepository.findById(studentId).orElseThrow(()->new IllegalStateException(studentId + " does not exist..."));
+
+			//To uptade name
+			if(newStudent.getName()!=null) {
+				existingStudent.setName(newStudent.getName());
+			}
+			
+			//To uptade email
+			Optional<SB20StudentBean> studentEmailOptional =  studentRepository.findSB20StudentBeanByEmail(newStudent.getEmail());
+			if(studentEmailOptional.isPresent()) {
+				throw new IllegalStateException("Email is taken, try with another email...");
+			}
+			if(newStudent.getEmail()!=null) {
+				existingStudent.setEmail(newStudent.getEmail());
+			}
+			
+			//To uptade dob
+			if(newStudent.getDob()!=null) {
+				existingStudent.setDob(newStudent.getDob());
+			}
+			
+			return studentRepository.save(existingStudent);
+		
+		//with day time  ===================================================
+		
+//		//Update "name"
+//		String existingName = existingStudent.getName();
+//		if(newStudent.getName()==null) {
+//			existingStudent.setName(null);
+//		}else if(existingStudent.getName()==null) {
+//			existingStudent.setName(newStudent.getName());
+//		}else if(!existingName.equals(newStudent.getName())) {
+//			existingStudent.setName(newStudent.getName());
+//		}
+//		
+//		//Update "email"
+//		String existingEmail = existingStudent.getEmail();
+//		if(newStudent.getEmail()==null) {
+//			existingStudent.setEmail(null);
+//		}else if(existingStudent.getEmail()==null) {
+//			existingStudent.setEmail(newStudent.getEmail());
+//		}else if(!existingEmail.equals(newStudent.getEmail())) {
+//			existingStudent.setEmail(newStudent.getEmail());
+//		}else {
+//			throw new IllegalStateException("Email exists, use another email");
+//		}
+//		
+//		//Update date of birth
+//		LocalDate existingDob = existingStudent.getDob();
+//		if(newStudent.getDob()==null) {
+//			existingStudent.setDob(null);
+//		}else if(existingStudent.getDob()==null) {
+//			existingStudent.setDob(newStudent.getDob());
+//		}else if(!existingDob.equals(newStudent.getDob())) {
+//			existingStudent.setDob(newStudent.getDob());
+//		}
+//		
+//		return studentRepository.save(existingStudent);
+		
+		//===========================================================
 		
 		//Note: eski kodlar 
 //		//Update name

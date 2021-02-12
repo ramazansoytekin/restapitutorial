@@ -58,6 +58,6 @@ public class SB23StudentBeanController {
 	
 	@PatchMapping(path = "/api/v1/updatePartially/{studentId}")
     public ResponseEntity<SB20StudentBean> updateStudentPartiallyById(@PathVariable(value = "studentId") Long studentId, @Validated @RequestBody SB20StudentBean newStudent) {
-        return ResponseEntity.ok(SB22StudentBeanService.updateStudentPartially(studentId, newStudent));
+        return ResponseEntity.ok(SB22StudentBeanService.updateStudentPartially2(studentId, newStudent));
     }
 }
